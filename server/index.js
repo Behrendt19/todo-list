@@ -10,7 +10,7 @@ app.use(favicon('./client/favicon.ico'))
 app.use(logger())
 
 store.init();
-app.use(serve('client'))
+app.use(serve(path.resolve(__dirname, '..', 'client')))
 
 const userRoutes = require('./routes/users')
 app.use(userRoutes.routes())
