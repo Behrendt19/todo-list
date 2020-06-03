@@ -11,7 +11,7 @@ const storage = require('azure-storage')
 const again = new storage.LinearRetryPolicyFilter();
 const loggingOp = new LoggingFilter();
 const uuid = require('uuid')
-const service = storage.createTableService().withFilter(again).withFilter(loggingOp);
+const service = storage.createTableService()
 const table = 'tasks'
 
 const init = async () => (
@@ -34,18 +34,31 @@ const addTask = async ({ title, description }) => (
     }
     console.log('addtask - task')
     service.insertEntity(table, task, (error) => {
-      !error ? resolve() : reject()
       if(error) {
         console.log(error);
       }
+      !error ? resolve() : reject()
     })
     console.log('addtask - insertEntity')
   })
   ,console.log('addtask - Promise')
 )
 
+const listTasks = async () => (
+  new Promise((resolve, reject) => {
+    const query = new storage.TableQuery()
+      .select(['title'])
+      .where('PartitionKey eq ?', 'task')
 
+    service.queryEntities(table, query, null, (error, result) => {
+      !error ? resolve(result.entries.map((entry) => ({
+        title: entry.title._
+      }))) : reject()
+    })
+  })
+)
 module.exports = {
   init,
-  addTask
+  addTask,
+  listTasks,
 } 
