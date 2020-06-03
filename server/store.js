@@ -22,7 +22,7 @@ const init = async () => (
   })
 )
 
-const addTask = async ({ title, description }) => (
+const addTask = async ({ title, description}) => (
   new Promise((resolve, reject) => {
     const gen = storage.TableUtilities.entityGenerator
     console.log('addtask - gen')
@@ -47,13 +47,14 @@ const addTask = async ({ title, description }) => (
 const listTasks = async () => (
   new Promise((resolve, reject) => {
     const query = new storage.TableQuery()
-      .select(['title', 'description'])
+      .select(['title', 'description', 'Timestamp'])
       .where('PartitionKey eq ?', 'task')
 
     service.queryEntities(table, query, null, (error, result) => {
       !error ? resolve(result.entries.map((entry) => ({
         title: entry.title._,
         description: entry.description._,
+        Timestamp: entry.Timestamp._
       }))) : reject()
     })
   })
